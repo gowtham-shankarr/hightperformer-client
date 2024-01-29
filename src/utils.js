@@ -1,5 +1,3 @@
-import faker from 'faker';
-
 export function shortId() {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
@@ -8,74 +6,96 @@ export function randomColor() {
   return `hsl(${Math.floor(Math.random() * 360)}, 95%, 90%)`;
 }
 
-export function makeData(count) {
-  let data = [];
-  let options = [];
-  for (let i = 0; i < count; i++) {
-    let row = {
-      ID: faker.mersenne.rand(),
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      email: faker.internet.email(),
-      age: Math.floor(20 + Math.random() * 20),
-      music: faker.music.genre(),
-    };
-    options.push({ label: row.music, backgroundColor: randomColor() });
+export function makeData(companies) {
+  // let data = [];
+  // let options = [];
 
-    data.push(row);
-  }
+  // companies.forEach((company) => {
+  //   let row = {
+  //     ID: company.id, // Replace with actual ID if available
+  //     firstName: company.firstName, // Adjust these as per your actual data
+  //     lastName: company.lastName,
+  //     email: company.email,
+  //     age: company.age, // Assuming age is part of your company data
+  //     music: company.music, // Replace with actual field if available
+  //   };
+  //   options.push({ label: row.music, backgroundColor: randomColor() });
 
-  options = options.filter(
-    (a, i, self) => self.findIndex(b => b.label === a.label) === i
-  );
+  //   data.push(row);
+  // });
+
+  const data = companies.map(company => ({
+    ID: company.id,
+    company_name: company.company_name,
+    description: company.description,
+    linkedin: company.linkedin,
+    domains: company.domains,
+    twitter: company.twitter,
+    categories: company.categories,
+    twitter_follower: company.twitter_follower,
+  }));
+  
+
+  // options = options.filter(
+  //   (a, i, self) => self.findIndex(b => b.label === a.label) === i
+  // );
 
   let columns = [
     {
-      id: 'firstName',
-      label: 'First Name',
-      accessor: 'firstName',
-      minWidth: 100,
+      id: 'company_name',
+      label: 'Company Name',
+      accessor: 'company_name',
+      minWidth: 150,
       dataType: DataTypes.TEXT,
       options: [],
     },
     {
-      id: 'lastName',
-      label: 'Last Name',
-      accessor: 'lastName',
-      minWidth: 100,
+      id: 'description',
+      label: 'Description',
+      accessor: 'description',
+      minWidth: 200,
       dataType: DataTypes.TEXT,
       options: [],
     },
     {
-      id: 'age',
-      label: 'Age',
-      accessor: 'age',
-      width: 80,
+      id: 'linkedin',
+      label: 'LinkedIn',
+      accessor: 'linkedin',
+      minWidth: 150,
+      dataType: DataTypes.TEXT,
+      options: [],
+    },
+    {
+      id: 'domains',
+      label: 'Domains',
+      accessor: 'domains',
+      minWidth: 150,
+      dataType: DataTypes.TEXT,
+      options: [],
+    },
+    {
+      id: 'twitter',
+      label: 'Twitter',
+      accessor: 'twitter',
+      minWidth: 150,
+      dataType: DataTypes.TEXT,
+      options: [],
+    },
+    {
+      id: 'categories',
+      label: 'Categories',
+      accessor: 'categories',
+      minWidth: 150,
+      dataType: DataTypes.TEXT,
+      options: [],
+    },
+    {
+      id: 'twitter_follower',
+      label: 'Twitter Followers',
+      accessor: 'twitter_follower',
+      minWidth: 150,
       dataType: DataTypes.NUMBER,
       options: [],
-    },
-    {
-      id: 'email',
-      label: 'E-Mail',
-      accessor: 'email',
-      width: 300,
-      dataType: DataTypes.TEXT,
-      options: [],
-    },
-    {
-      id: 'music',
-      label: 'Music Preference',
-      accessor: 'music',
-      dataType: DataTypes.SELECT,
-      width: 200,
-      options: options,
-    },
-    {
-      id: Constants.ADD_COLUMN_ID,
-      width: 20,
-      label: '+',
-      disableResizing: true,
-      dataType: 'null',
     },
   ];
   return { columns: columns, data: data, skipReset: false };

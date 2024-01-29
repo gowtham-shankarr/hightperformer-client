@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useTable, useBlockLayout, useResizeColumns, useSortBy } from 'react-table';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -9,8 +9,7 @@ import PlusIcon from './img/Plus';
 import { ActionTypes } from './utils';
 import { FixedSizeList } from 'react-window';
 import scrollbarWidth from './scrollbarWidth';
-import SortMenu from './components/SortMenu';
-import FilterMenu from './components/FilterMenu';
+
 import clsx from 'clsx';
 
 const defaultColumn = {
@@ -23,8 +22,9 @@ const defaultColumn = {
 };
 
 export default function Table({ columns, data, dispatch: dataDispatch = () => {}, skipReset }) {
-  
 
+  // console.log('Columns:', columns);
+  // console.log('Data:', data);
   const sortTypes = useMemo(
     () => ({
       alphanumericFalsyLast(rowA, rowB, columnId, desc) {
@@ -48,26 +48,54 @@ export default function Table({ columns, data, dispatch: dataDispatch = () => {}
     []
   );
 
-  const [columnOrder, setColumnOrder] = useState(columns.map((col) => col.accessor));
+  // const [columnOrder, setColumnOrder] = useState(columns.map((col) => col.accessor));
+
+  const [columnOrder, setColumnOrder] = useState(
+    columns ? columns.map((col) => col.accessor) : []
+  );
 
  
-const moveColumn = useCallback((dragIndex, hoverIndex) => {
-  setColumnOrder((prevOrder) =>
-    update(prevOrder, {
-      $splice: [
-        [dragIndex, 1],
-        [hoverIndex, 0, prevOrder[dragIndex]],
-      ],
-    })
-  );
-}, []);
+// const moveColumn = useCallback((dragIndex, hoverIndex) => {
+//   setColumnOrder((prevOrder) =>
+//     update(prevOrder, {
+//       $splice: [
+//         [dragIndex, 1],
+//         [hoverIndex, 0, prevOrder[dragIndex]],
+//       ],
+//     })
+//   );
+// }, []);
 
-  const reorderedColumns = useMemo(() => {
-    const orderedColumns = [...columns].sort(
-      (a, b) => columnOrder.indexOf(a.accessor) - columnOrder.indexOf(b.accessor)
-    );
-    return orderedColumns;
-  }, [columns, columnOrder]);
+const moveColumn = useCallback((dragIndex, hoverIndex) => {
+  const newOrder = [...columnOrder];
+  const [dragged] = newOrder.splice(dragIndex, 1);
+  newOrder.splice(hoverIndex, 0, dragged);
+  setColumnOrder(newOrder);
+  fetch('http://localhost:8080/companies/column-order', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ columnOrder: newOrder.filter(col => col !== undefined) }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Column order updated on server:', data);
+  })
+  .catch(error => {
+    console.error('Failed to update column order on server:', error);
+  });
+}, [columnOrder]);
+
+const reorderedColumns = useMemo(() => {
+  if (!columns) return []; 
+
+  const orderedColumns = [...columns].sort(
+    (a, b) => columnOrder.indexOf(a.accessor) - columnOrder.indexOf(b.accessor)
+  );
+  return orderedColumns;
+}, [columns, columnOrder]);
+
 
   const {
     getTableProps,
@@ -109,6 +137,28 @@ const moveColumn = useCallback((dragIndex, hoverIndex) => {
     [prepareRow, rows]
   );
 
+  // const handleColumnOrderChange = (newOrder) => {
+  //   // Update state if necessary
+  //   setColumnOrder(newOrder);
+  
+  //   // API call to update column order on server
+  //   fetch('/api/updateColumnOrder', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ columnOrder: newOrder }),
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     console.log('Column order updated:', data.message);
+  //     // Optionally refetch data to reflect new order
+  //   })
+  //   .catch(error => {
+  //     console.error('Error updating column order:', error);
+  //   });
+  // };
+
 
   function isTableResizing() {
     for (let headerGroup of headerGroups) {
@@ -121,59 +171,43 @@ const moveColumn = useCallback((dragIndex, hoverIndex) => {
 
     return false;
   }
-
-  function handleSortChange (sortOption) {
-    console.log(sortOption)
-  }
-
-  function handleFilterChange(searchTerm) {
-    console.log(searchTerm)
-  }
+  
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div>
-      <div className="flex flex-row p-4">
-      <SortMenu onSortChange={handleSortChange} ></SortMenu>
-      <div className="pipe-symbol"></div>
-      <FilterMenu onFilterChange={handleFilterChange}></FilterMenu>
-      </div>
         <div style={{ maxWidth: '100vw', overflow: 'auto' }}>
-          <div {...getTableProps()}
-        className={clsx('table', isTableResizing() && 'noselect')}>
-            {headerGroups.map((headerGroup, headerIndex) => (
-              <div {...headerGroup.getHeaderGroupProps()} className="tr">
-                {headerGroup.headers.map((column, columnIndex) => (
-                  <Header
-                    column={column}
-                    index={columnIndex}
-                    moveColumn={moveColumn}
-                  />
-                ))}
+          {columns ? (
+            <div {...getTableProps()} className={clsx('table', isTableResizing() && 'noselect')}>
+              {headerGroups.map((headerGroup, headerIndex) => (
+                <div {...headerGroup.getHeaderGroupProps()} className="tr">
+                  {headerGroup.headers.map((column, columnIndex) => (
+                    <Header
+                      column={column}
+                      index={columnIndex}
+                      moveColumn={moveColumn}
+                    />
+                  ))}
+                </div>
+              ))}
+              <div {...getTableBodyProps()}>
+                <FixedSizeList
+                  height={480}
+                  itemCount={rows.length}
+                  itemSize={40}
+                  width={totalColumnsWidth + scrollbarWidth}
+                >
+                  {RenderRow}
+                </FixedSizeList>
               </div>
-            ))}
-            <div {...getTableBodyProps()}>
-          <FixedSizeList
-            height={480}
-            itemCount={rows.length}
-            itemSize={40}
-            width={totalColumnsWidth + scrollbarWidth}
-          >
-            {RenderRow}
-          </FixedSizeList>
-          <div
-            className="tr add-row"
-            onClick={() => dataDispatch({ type: ActionTypes.ADD_ROW })}
-          >
-            <span className="svg-icon svg-gray icon-margin">
-              <PlusIcon />
-            </span>
-            New
-          </div>
-        </div>
-          </div>
+            </div>
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
       </div>
     </DndProvider>
   );
+  
+  
 }

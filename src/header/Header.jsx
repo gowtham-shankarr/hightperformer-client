@@ -1,28 +1,27 @@
 // Header.js
-import React, { useState, useEffect } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
-import { usePopper } from 'react-popper';
-import { Constants } from '../utils';
-import AddColumnHeader from './AddColumnHeader';
-import DataTypeIcon from './DataTypeIcon';
-import HeaderMenu from './HeaderMenu';
+import React, { useState, useEffect } from "react";
+import { useDrag, useDrop } from "react-dnd";
+import { usePopper } from "react-popper";
+import { Constants } from "../utils";
+import AddColumnHeader from "./AddColumnHeader";
+import DataTypeIcon from "./DataTypeIcon";
+import HeaderMenu from "./HeaderMenu";
 
-const DND_ITEM_TYPE = 'column';
+const DND_ITEM_TYPE = "column";
 
 export default function Header({
   column: { id, created, label, dataType, getResizerProps, getHeaderProps },
-  index, 
+  index,
   moveColumn,
   setSortBy,
   dataDispatch = () => {},
 }) {
-  
   const [showHeaderMenu, setShowHeaderMenu] = useState(created || false);
   const [headerMenuAnchorRef] = useState(null);
   const [headerMenuPopperRef, setHeaderMenuPopperRef] = useState(null);
   const headerMenuPopper = usePopper(headerMenuAnchorRef, headerMenuPopperRef, {
-    placement: 'bottom',
-    strategy: 'absolute',
+    placement: "bottom",
+    strategy: "absolute",
   });
   useEffect(() => {
     if (created) {
@@ -57,12 +56,15 @@ export default function Header({
 
     return (
       <>
-         <div {...getHeaderProps()} className="th noselect d-inline-block" ref={preview}>
+        <div
+          {...getHeaderProps()}
+          className="th noselect d-inline-block"
+          ref={preview}
+        >
           <div
             className="th-content"
             onClick={() => setShowHeaderMenu(true)}
-            ref={node => drag(drop(node))}
-
+            ref={(node) => drag(drop(node))}
           >
             <span className="svg-icon svg-gray icon-margin">
               <DataTypeIcon dataType={dataType} />
@@ -70,23 +72,23 @@ export default function Header({
             {label}
           </div>
           <div {...getResizerProps()} className="resizer" />
-        </div>
-        {showHeaderMenu && (
-          <div className="overlay" onClick={() => setShowHeaderMenu(false)} />
-        )}
-       {showHeaderMenu && (
-  <HeaderMenu
-    label={label}
-    dataType={dataType}
-    popper={headerMenuPopper}
-    popperRef={setHeaderMenuPopperRef}
-    dataDispatch={dataDispatch}
-    setSortBy={setSortBy}
-    columnId={id}
-    setShowHeaderMenu={setShowHeaderMenu}
-  />
-)}
 
+          {showHeaderMenu && (
+            <div className="overlay" onClick={() => setShowHeaderMenu(false)} />
+          )}
+          {showHeaderMenu && (
+            <HeaderMenu
+              label={label}
+              dataType={dataType}
+              popper={headerMenuPopper}
+              popperRef={setHeaderMenuPopperRef}
+              dataDispatch={dataDispatch}
+              setSortBy={setSortBy}
+              columnId={id}
+              setShowHeaderMenu={setShowHeaderMenu}
+            />
+          )}
+        </div>
       </>
     );
   }

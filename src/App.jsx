@@ -13,7 +13,8 @@ import Sidebar from './layout/Sidebar';
 import Header from './layout/Header';
 import SubHeader from './layout/SubHeader';
 import MainContent from './layout/MainContent';
-
+import SortMenu from './components/SortMenu';
+import FilterMenu from './components/FilterMenu';
 function reducer(state, action) {
   switch (action.type) {
     case ActionTypes.ADD_OPTION_TO_COLUMN:
@@ -107,6 +108,13 @@ function reducer(state, action) {
               },
             });
           }
+          case 'SET_DATA':
+      return {
+        ...state,
+        data: action.payload.data,
+        columns: action.payload.columns,
+        skipReset: action.payload.skipReset,
+      };
         default:
           return state;
       }
@@ -187,38 +195,146 @@ function reducer(state, action) {
       return state;
   }
 }
-
 function App() {
-  const [state, dispatch] = useReducer(reducer, makeData(50));
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [state, dispatch] = useReducer(reducer, { data: [], columns: [], skipReset: false });
   const [darkTheme, setDarkTheme] = useState(true);
+
+  const [data, setData] = useState([]);
+  const [columns, setColumns] = useState([]);
+
+  const [sortCriteria, setSortCriteria] = useState([]);
+  const [filters, setFilters] = useState([]);
+
+  useEffect(() => {
+  const fetchData = async () => {
+    setIsLoading(true); 
+    let query = 'http://localhost:8080/companies';
+
+    const queryParams = [];
+    if (sortCriteria.length > 0) {
+      const sortParam = encodeURIComponent(JSON.stringify(sortCriteria));
+      queryParams.push(`sort=${sortParam}`);
+    }
+    if (filters.length > 0) {
+      const filterParam = encodeURIComponent(JSON.stringify(filters));
+      queryParams.push(`filters=${filterParam}`);
+    }
+    query += queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+
+    try {
+      const response = await fetch(query);
+      const apiData = await response.json();
+      setData(apiData.companies);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchData();
+}, [sortCriteria, filters]);
+
+
+  useState(() => {
+    fetch('http://localhost:8080/companies')
+      .then(response => response.json())
+      .then(apiData => {
+        const transformedData = makeData(apiData.companies);
+        // console.log('Transformed Data:', transformedData);
+        setData(transformedData.data);
+        setColumns(transformedData.columns);
+      })
+      .catch(error => console.error('Error fetching data: ', error));
+  }, []);
+
+  
+  
+
+  // console.log('Columns State:', columns);
+  // console.log('Data State:', data);
 
   const toggleTheme = () => {
     setDarkTheme(!darkTheme);
   };
 
-  useEffect(() => {
-    dispatch({ type: ActionTypes.ENABLE_RESET });
-  }, [state.data, state.columns]);
+  const handleSortChange = newSortCriteria => {
+    setSortCriteria(newSortCriteria);
+  };
 
+  const handleFilterChange = newFilters => {
+    setFilters(newFilters);
+  };
+
+  const defaultColumnOrder = ['id', 'company_name', 'description', 'linkedin', 'domains', 'twitter', 'categories', 'twitter_follower'];
+
+  const [columnOrders, setColumnOrders] = useState(defaultColumnOrder);
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    fetchColumnOrderAndData();
+  }, []);
+
+  function fetchColumnOrderAndData() {
+    fetch('http://localhost:8080/companies/column-order')
+      .then(response => response.json())
+      .then(data => {
+        const initialColumnOrder = data.columnOrder || defaultColumnOrder;
+        setColumnOrders(initialColumnOrder); 
+        fetchDataBasedOnNewOrder(initialColumnOrder); 
+      })
+      .catch(error => {
+        console.error('Failed to fetch initial column order:', error);
+        fetchDataBasedOnNewOrder(defaultColumnOrder);
+      });
+  }
+
+  function onColumnOrderUpdateSuccess(newColumnOrder) {
+    setColumnOrders(newColumnOrder);
+    fetchDataBasedOnNewOrder(newColumnOrder);
+  }
+
+  function fetchDataBasedOnNewOrder(columnOrder) {
+    const apiUrl = `http://localhost:8080/companies?columnOrder=${encodeURIComponent(JSON.stringify(columnOrder))}`;
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        setTableData(data.companies);
+      })
+      .catch(error => {
+        console.error('Failed to fetch data:', error);
+      });
+  }
+  
   return (
-    <div className={`flex overflow-hidden	h-screen ${darkTheme ? 'dark' : ''}`}>
+    <div className={`flex overflow-hidden h-screen ${darkTheme ? 'dark' : ''}`}>
       <Sidebar toggleTheme={toggleTheme} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <SubHeader />
         <MainContent>
-  <Table
-    columns={state.columns}
-    data={state.data}
-    dispatch={dispatch}
-    skipReset={state.skipReset}
-  />
-</MainContent>
+          <div className="flex flex-row p-4">
+            <SortMenu onSortChange={handleSortChange} />
+            <div className="pipe-symbol"></div>
+            <FilterMenu onFilterChange={handleFilterChange} />
+          </div>
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <Table
+              columns={columns}
+              data={data}
+              dispatch={dispatch}
+              skipReset={state.skipReset}
+            />
+          )}
+        </MainContent>
       </div>
       <div id="popper-portal"></div>
     </div>
   );
+  
 }
 
 export default App;

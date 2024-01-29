@@ -141,9 +141,10 @@ export default function HeaderMenu({
       ref={popperRef}
       style={{ ...popper.styles.popper, zIndex: 3 }}
       {...popper.attributes.popper}
+      className="top55"
     >
       <div
-        className="bg-white shadow-5 border-radius-md"
+        className="bg-header-menu shadow-5 border-radius-md"
         style={{
           width: 240,
         }}
@@ -166,7 +167,7 @@ export default function HeaderMenu({
               onKeyDown={handleColumnNameKeyDown}
             />
           </div>
-          <span className="font-weight-600 font-size-75 color-grey-500 text-transform-uppercase">
+          <span className="font-weight-600 font-size-75 color-white-500 text-transform-uppercase">
             Property Type
           </span>
         </div>
@@ -194,7 +195,7 @@ export default function HeaderMenu({
             />
           )}
         </div>
-        <div style={{ borderTop: `2px solid ${grey(200)}` }} />
+        <div style={{ borderTop: `1px solid rgb(49, 51, 55)` }} />
         <div className="list-padding">
           {buttons.map(button => (
             <button

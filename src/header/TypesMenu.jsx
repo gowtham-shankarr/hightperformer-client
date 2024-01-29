@@ -66,7 +66,7 @@ export default function TypesMenu({
       style={{
         ...popper.styles.popper,
         width: 200,
-        backgroundColor: 'white',
+        backgroundColor: 'rgb(35, 37, 41)',
         zIndex: 4,
       }}
     >

@@ -55,9 +55,9 @@ const Sidebar = ({ toggleTheme }) => {
             <div className="keyboard-icon-svg">
             <KIcon/>
             </div>
-            <div className='quick-action-text ml-2'>Quick actions</div>
+            <div className="quick-action-text ml-2">Quick actions</div>
             </div>
-              <div className='quick-action-icon'>
+              <div className="quick-action-icon">
                 <kbd>
                 <span className="text-xs" style={{ fontSize: '10px' }}>⌘</span>k
                 </kbd>
