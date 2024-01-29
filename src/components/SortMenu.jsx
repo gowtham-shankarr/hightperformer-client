@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BsSortDownAlt } from 'react-icons/bs';
-import { PiDotsSix } from 'react-icons/pi';
 import useOutsideClick from '../utils/useOutsideClick';
 import { RiCloseFill } from "react-icons/ri";
 import { FaChevronDown } from "react-icons/fa";
@@ -12,7 +11,9 @@ const SortMenu = ({ onSortChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const attributes = ['company name', 'domains', 'linkedin', 'twitter', 'categories', 'twitter follower', 'description'];
   const dropdownRef = useRef(null);
+  const sortMenuRef = useRef(null);
   const [openDropdown, setOpenDropdown] = useState({ index: null, type: null });
+    
 
   useOutsideClick(dropdownRef, () => setShowDropdown(false));
 
@@ -21,6 +22,29 @@ const SortMenu = ({ onSortChange }) => {
   const filteredAttributes = attributes.filter(attr =>
     attr.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown({ index: null, type: null });
+      }
+    }
+    if (openDropdown.index !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openDropdown]);
+
+  const [firstClick, setFirstClick] = useState(true);
+
+  const handleAddSortClick = () => {
+    if (firstClick) {
+      setFirstClick(false);
+      setSorts([...sorts, { attribute: '', direction: 'Ascending' }]);
+    } else {
+      setShowDropdown(!showDropdown);
+    }
+  };
 
   const applySort = () => {
     const sortParams = sorts.map(sort => ({
@@ -31,11 +55,20 @@ const SortMenu = ({ onSortChange }) => {
   };
 
   const handleAttributeSelect = (index, attribute) => {
-    const updatedSorts = sorts.map((sort, i) => 
-      i === index ? { ...sort, attribute } : sort
-    );
+    let updatedSorts;
+  
+    if (typeof index === 'undefined') {
+      updatedSorts = [...sorts, { attribute, direction: 'Ascending' }];
+      setOpenDropdown({ index: updatedSorts.length - 1, type: 'direction' });
+    } else {
+      updatedSorts = sorts.map((sort, i) => 
+        i === index ? { ...sort, attribute } : sort
+      );
+      setOpenDropdown({ index, type: 'direction' });
+    }
+  
     setSorts(updatedSorts);
-    applySort();
+    applySort(updatedSorts);
   };
 
   const handleDirectionChange = (index, direction) => {
@@ -58,47 +91,70 @@ const SortMenu = ({ onSortChange }) => {
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-
-
       <button onClick={() => setShowDropdown(!showDropdown)} className="bg-gray-800 text-white px-4 py-2 rounded-md sort-btn">
         <BsSortDownAlt /> &nbsp; {sorts.length > 0 ? `Sorted by + ${sorts.length}` : 'Sort'}
       </button>
-
+  
       {showDropdown && (
-        <div className="absolute z-10 mt-2 sort-menu-block attri-sort-menu-block">
+        <div className="absolute z-10 mt-2">
+          <div className="width280">
+          {sorts.length === 0 && (
+            <>
+              <input
+                type="text"
+                placeholder="Search attributes..."
+                value={searchTerm}
+                onChange={updateSearch}
+                className="p-2 w-full rounded-md sort-search"
+              />
+              <div className='text-white company-attr-txt'>
+                Company attributes
+              </div>
+              {filteredAttributes.map((attribute, attrIndex) => (
+              <div key={attribute} className="cursor-pointer sort-menu-item" onClick={() => handleAddSort()}>
+                {attribute}
+              </div>
+            ))}
+            </>
+          )}
+          </div>
+          {sorts.length > 0 && (
+          <div className="width480">
           {sorts.map((sort, index) => (
             <div key={index} className="flex flex-col relative">
               <div className="flex justify-between items-center px-4 py-1">
                 <div className="flex items-center">
-                  {/* <PiDotsSix /> */}
                   <div
                     className="menu-sort-inner cursor-pointer menu-attri"
                     onClick={() => setOpenDropdown({ index, type: 'attribute' })}
                   >
-                    {sort.attribute || 'Select attribute'}
-                  </div>
-                </div>
-                <div
-                  className="menu-sort-inner cursor-pointer direction-sort"
-                  onClick={() => setOpenDropdown({ index, type: 'direction' })}
-                >
-                  <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                  <BsSortUp />
-                    {sort.direction}
-                  </div>
+                    <div className="flex items-center justify-between">
+                      <div>{sort.attribute || 'Select attribute'}</div>
                     <div className="text-grey-txt3">
-                    <FaChevronDown />
+                        <FaChevronDown />
                       </div>
+                    </div>
                     
                   </div>
-                  
+                  <div
+                    className="menu-sort-inner cursor-pointer direction-sort"
+                    onClick={() => setOpenDropdown({ index, type: 'direction' })}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <BsSortUp />
+                        <span className="pl-1.5">{sort.direction}</span>
+                      </div>
+                      <div className="text-grey-txt3">
+                        <FaChevronDown />
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={() => handleRemoveSort(index)} className="text-grey-txt3 close-sort"><RiCloseFill /></button>
                 </div>
-                <button onClick={() => handleRemoveSort(index)} className="text-grey-txt3"><RiCloseFill /></button>
               </div>
-
               {openDropdown.index === index && openDropdown.type === 'attribute' && (
-                <div className="dropdown-content sort-menu-block">
+                <div className="dropdown-content sort-menu-block" ref={sortMenuRef}>
                   {filteredAttributes.map(attr => (
                     <div
                       key={attr}
@@ -110,35 +166,34 @@ const SortMenu = ({ onSortChange }) => {
                   ))}
                 </div>
               )}
-
               {openDropdown.index === index && openDropdown.type === 'direction' && (
-                <div className="dropdown-content sort-direction-content sort-menu-block">
+                <div className="dropdown-content sort-direction-content sort-menu-block" ref={sortMenuRef}>
                   {['Ascending', 'Descending'].map(direction => (
-                    <div className="flex items-center">
-                      
-                       <div
+                    <div
                       key={direction}
                       className="dropdown-item cursor-pointer sort-menu-item w-full"
                       onClick={() => handleDirectionChange(index, direction)}
                     >
-                      {direction} 
+                      {direction}
                     </div>
-
-                    </div>
-                   
                   ))}
                 </div>
               )}
             </div>
           ))}
+          {sorts.length > 0 && (
+            <div className="px-4 py-2 add-sort-btn cursor-pointer" onClick={handleAddSort}>
+              + Add sort
+            </div>
+          )}
+          </div>
+          )}
 
-          <button className="px-4 py-2 add-sort-btn cursor-pointer" onClick={handleAddSort}>
-            + Add sort
-          </button>
         </div>
       )}
     </div>
   );
+  
 };
 
 export default SortMenu;

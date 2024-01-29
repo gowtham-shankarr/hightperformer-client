@@ -212,6 +212,7 @@ const FilterMenu = ({ onFilterChange }) => {
     newFilters.splice(index, 1);
     setFilters(newFilters);
     setShowConditionDropdownIndex(null);
+    applyFilters();
   };
 
   return (

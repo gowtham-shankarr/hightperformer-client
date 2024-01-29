@@ -708,7 +708,7 @@ nav div:hover,
 }
 
 .sort-menu-block {
-  width: 340px;
+  /* width: 480px; */
   background-color: rgb(35, 37, 41);
   box-shadow: rgb(49, 51, 55) 0px 0px 0px 1px inset;
   z-index: 2147483647;
@@ -720,6 +720,22 @@ nav div:hover,
   animation-duration: 80ms;
   animation-timing-function: ease;
   padding: 0;
+}
+
+.width480 {
+  width: 480px;
+  background-color: rgb(35, 37, 41);
+  box-shadow: rgb(49, 51, 55) 0px 0px 0px 1px inset;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  border-radius: 10px;
+  animation-duration: 80ms;
+  animation-timing-function: ease;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .sort-search {
@@ -870,8 +886,19 @@ nav div:hover,
   border-radius: 8px;
 }
 
-.filter-drop-down-conditions-menu:hover, .remove-filter-menu:hover, .select-condition-btn:hover, .selected-key-menu:hover, .condition-input:hover, .add-sort-btn:hover {
+.filter-drop-down-conditions-menu:hover, .remove-filter-menu:hover, .select-condition-btn:hover, .selected-key-menu:hover, .condition-input:hover, .add-sort-btn:hover, .close-sort:hover {
   background-color: rgb(49, 51, 55);
+}
+
+.close-sort {
+  height: 28px;
+    width: 28px;
+    text-align: center;
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
 }
 
 .remove-filter-menu {
@@ -967,6 +994,7 @@ nav div:hover,
   margin-left: 15px;
   font-size: 14px;
   border: 1px solid rgb(49, 51, 55);
+  margin-top: 10px;
 }
 
 .dropdown-content {
@@ -986,7 +1014,7 @@ nav div:hover,
     color: #fff;
 }
 .direction-sort {
-  width: 140px;
+  width: 160px;
 }
 
 .sort-direction-content {
@@ -1000,13 +1028,29 @@ nav div:hover,
 }
 
 .menu-attri {
-  width: 140px;
+  width: 242px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  margin-right: 10px;
 }
 
 .attri-sort-menu-block {
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.width280 {
+  width: 280px;
+  background-color: rgb(35, 37, 41);
+  box-shadow: rgb(49, 51, 55) 0px 0px 0px 1px inset;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  border-radius: 10px;
+  animation-duration: 80ms;
+  animation-timing-function: ease;
+  padding: 0;
 }
