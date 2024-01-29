@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MdKeyboardArrowDown, MdOutlineFileDownload } from 'react-icons/md';
 import { GoCommentDiscussion } from 'react-icons/go';
 import { IoSettingsOutline } from 'react-icons/io5';
-import DropdownMenu from '../components/dropdownMenu.jsx';
+import DropdownMenu from '../components/dropdownMenu';
 
 const SubHeader = () => {
   const [showDropdown, setShowDropdown] = useState({
