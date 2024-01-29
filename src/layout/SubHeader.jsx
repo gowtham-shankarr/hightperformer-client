@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MdKeyboardArrowDown, MdOutlineFileDownload } from 'react-icons/md';
 import { GoCommentDiscussion } from 'react-icons/go';
 import { IoSettingsOutline } from 'react-icons/io5';
-import DropdownMenu from '../../src/components/dropdownMenu';
+// import DropdownMenu from '../../src/components/dropdownMenu';
 
 const SubHeader = () => {
   const [showDropdown, setShowDropdown] = useState({
@@ -25,10 +25,10 @@ const SubHeader = () => {
         className="text-base text-gray-800 dark:text-white text-border pt-1 px-2.5 pb-1 flex items-center cursor-pointer"
       >
         All Companies <MdKeyboardArrowDown className="ml-2" />
-        <DropdownMenu isVisible={showDropdown.first}>
+        {/* <DropdownMenu isVisible={showDropdown.first}>
           <div className="text-gray-800">Dropdown Content 1</div>
           <div className="text-gray-800">Dropdown Content 1</div>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
       <div className="flex">
         <div className="text-white text-border pad4-10 ml-2.5 flex items-center comment-sec">
@@ -43,10 +43,10 @@ const SubHeader = () => {
             <IoSettingsOutline />
             <div className="pl-1.5">View Settings</div>
           </div>
-          <DropdownMenu isVisible={showDropdown.second}>
+          {/* <DropdownMenu isVisible={showDropdown.second}>
             <div className="text-gray-800">Dropdown Content 1</div>
             <div className="text-gray-800">Dropdown Content 1</div>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
 
         <div
@@ -62,10 +62,10 @@ const SubHeader = () => {
               <MdKeyboardArrowDown className="ml-2" />
             </div>
           </div>
-          <DropdownMenu isVisible={showDropdown.third}>
+          {/* <DropdownMenu isVisible={showDropdown.third}>
             <div className="text-gray-800">Dropdown Content 1</div>
             <div className="text-gray-800">Dropdown Content 1</div>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </div>
     </div>
