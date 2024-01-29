@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { VscFilter } from "react-icons/vsc";
 import useOutsideClick from "../utils/useOutsideClick";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -207,13 +207,15 @@ const FilterMenu = ({ onFilterChange }) => {
     applyFilters();
   };
 
-  const removeFilter = (index) => {
-    const newFilters = [...filters];
-    newFilters.splice(index, 1);
-    setFilters(newFilters);
-    setShowConditionDropdownIndex(null);
+  const removeFilter = useCallback((index) => {
+    setFilters(currentFilters => {
+      const newFilters = [...currentFilters];
+      newFilters.splice(index, 1);
+      return newFilters;
+    });
     applyFilters();
-  };
+  }, [applyFilters]);
+  
 
   return (
     <div className="space-y-4 m0 flex items-center gap-2.5" ref={dropdownRef}>
