@@ -9,7 +9,6 @@ import PlusIcon from './img/Plus';
 import { ActionTypes } from './utils';
 import { FixedSizeList } from 'react-window';
 import scrollbarWidth from './scrollbarWidth';
-
 import clsx from 'clsx';
 
 const defaultColumn = {
@@ -71,7 +70,7 @@ const moveColumn = useCallback((dragIndex, hoverIndex) => {
   const [dragged] = newOrder.splice(dragIndex, 1);
   newOrder.splice(hoverIndex, 0, dragged);
   setColumnOrder(newOrder);
-  fetch('http://localhost:8080/companies/column-order', {
+  fetch('https://highperformer-server.vercel.app/companies/column-order', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -171,8 +170,6 @@ const reorderedColumns = useMemo(() => {
 
     return false;
   }
-  
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div>
@@ -192,7 +189,7 @@ const reorderedColumns = useMemo(() => {
               ))}
               <div {...getTableBodyProps()}>
                 <FixedSizeList
-                  height={480}
+                  height={560}
                   itemCount={rows.length}
                   itemSize={40}
                   width={totalColumnsWidth + scrollbarWidth}

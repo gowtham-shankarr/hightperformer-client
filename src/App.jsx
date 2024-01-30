@@ -15,6 +15,7 @@ import SubHeader from './layout/SubHeader';
 import MainContent from './layout/MainContent';
 import SortMenu from './components/SortMenu';
 import FilterMenu from './components/FilterMenu';
+import { Circles } from 'react-loader-spinner';
 function reducer(state, action) {
   switch (action.type) {
     case ActionTypes.ADD_OPTION_TO_COLUMN:
@@ -209,7 +210,7 @@ function App() {
   useEffect(() => {
   const fetchData = async () => {
     setIsLoading(true); 
-    let query = 'http://localhost:8080/companies';
+    let query = 'https://highperformer-server.vercel.app/companies';
 
     const queryParams = [];
     if (sortCriteria.length > 0) {
@@ -238,7 +239,7 @@ function App() {
 
 
   useState(() => {
-    fetch('http://localhost:8080/companies')
+    fetch('https://highperformer-server.vercel.app/companies')
       .then(response => response.json())
       .then(apiData => {
         const transformedData = makeData(apiData.companies);
@@ -248,9 +249,6 @@ function App() {
       })
       .catch(error => console.error('Error fetching data: ', error));
   }, []);
-
-  
-  
 
   // console.log('Columns State:', columns);
   // console.log('Data State:', data);
@@ -277,7 +275,7 @@ function App() {
   }, []);
 
   function fetchColumnOrderAndData() {
-    fetch('http://localhost:8080/companies/column-order')
+    fetch('https://highperformer-server.vercel.app/companies/column-order')
       .then(response => response.json())
       .then(data => {
         const initialColumnOrder = data.columnOrder || defaultColumnOrder;
@@ -296,7 +294,7 @@ function App() {
   }
 
   function fetchDataBasedOnNewOrder(columnOrder) {
-    const apiUrl = `http://localhost:8080/companies?columnOrder=${encodeURIComponent(JSON.stringify(columnOrder))}`;
+    const apiUrl = `https://highperformer-server.vercel.app/companies?columnOrder=${encodeURIComponent(JSON.stringify(columnOrder))}`;
     fetch(apiUrl)
       .then(response => response.json())
       .then(data => {
@@ -320,7 +318,17 @@ function App() {
             <FilterMenu onFilterChange={handleFilterChange} />
           </div>
           {isLoading ? (
-            <div>Loading...</div>
+             <div className="loader-container">
+             <Circles
+  height="30"
+  width="30"
+  color="#4fa94d"
+  ariaLabel="circles-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  visible={true}
+  />
+           </div>
           ) : (
             <Table
               columns={columns}
