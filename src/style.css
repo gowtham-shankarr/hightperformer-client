@@ -1079,3 +1079,43 @@ nav div:hover,
     transform: rotate(360deg);
   }
 }
+
+
+.react-datepicker {
+  z-index: 1000;
+}
+
+.MuiInputLabel-formControl {
+  display: none !important;
+}
+
+.MuiInputBase-colorPrimary, .MuiSvgIcon-root{
+  color: #fff !important;
+}
+
+.MuiInputBase-input {
+  height: 0 !important;
+}
+
+.MuiPickersCalendarHeader-switchViewIcon, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root{
+  fill: #757575 !important;
+}
+
+.date-picker {
+  color: #fff;
+    padding-top: 7px;
+    padding-left: 10px;
+    background-color: transparent;
+}
+
+.MuiOutlinedInput-input {
+  width: 100px !important;
+}
+
+.date-picker::-webkit-calendar-picker-indicator {
+  color: #fff;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

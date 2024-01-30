@@ -33,6 +33,7 @@ export function makeData(companies) {
     twitter: company.twitter,
     categories: company.categories,
     twitter_follower: company.twitter_follower,
+    created: company.created
   }));
   
 
@@ -97,6 +98,14 @@ export function makeData(companies) {
       dataType: DataTypes.NUMBER,
       options: [],
     },
+    {
+      id: 'created',
+      label: 'Created',
+      accessor: 'created',
+      minWidth: 350,
+      dataType: DataTypes.DATE,
+      options: [],
+    }
   ];
   return { columns: columns, data: data, skipReset: false };
 }
@@ -117,6 +126,7 @@ export const DataTypes = Object.freeze({
   NUMBER: 'number',
   TEXT: 'text',
   SELECT: 'select',
+  DATE: 'date'
 });
 
 export const Constants = Object.freeze({

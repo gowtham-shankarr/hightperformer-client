@@ -320,14 +320,14 @@ function App() {
           {isLoading ? (
              <div className="loader-container">
              <Circles
-  height="30"
-  width="30"
-  color="#4fa94d"
-  ariaLabel="circles-loading"
-  wrapperStyle={{}}
-  wrapperClass=""
-  visible={true}
-  />
+                  height="30"
+                  width="30"
+                  color="#4fa94d"
+                  ariaLabel="circles-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  />
            </div>
           ) : (
             <Table

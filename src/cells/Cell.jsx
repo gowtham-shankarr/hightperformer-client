@@ -3,6 +3,8 @@ import { DataTypes } from '../utils';
 import TextCell from './TextCell';
 import NumberCell from './NumberCell';
 import SelectCell from './SelectCell';
+import DatePickerCell from './DatePickerCell';
+
 
 export default function Cell({
   value: initialValue,
@@ -40,6 +42,15 @@ export default function Cell({
             dataDispatch={dataDispatch}
           />
         );
+      case DataTypes.DATE:
+      return (
+        <DatePickerCell
+          initialValue={initialValue}
+          rowIndex={index}
+          columnId={id}
+          dataDispatch={dataDispatch}
+        />
+      );
       default:
         return <span></span>;
     }
