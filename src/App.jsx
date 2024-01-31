@@ -207,7 +207,6 @@ function App() {
   const [sortCriteria, setSortCriteria] = useState([]);
   const [filters, setFilters] = useState([]);
 
-  useEffect(() => {
   const fetchData = async () => {
     setIsLoading(true); 
     let query = 'https://highperformer-server.vercel.app/companies';
@@ -226,7 +225,9 @@ function App() {
     try {
       const response = await fetch(query);
       const apiData = await response.json();
-      setData(apiData.companies);
+      const transformedData = makeData(apiData.companies);
+      setData(transformedData.data);
+      setColumns(transformedData.columns);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -234,24 +235,9 @@ function App() {
     }
   };
 
-  fetchData();
-}, [sortCriteria, filters]);
-
-
-  useState(() => {
-    fetch('https://highperformer-server.vercel.app/companies')
-      .then(response => response.json())
-      .then(apiData => {
-        const transformedData = makeData(apiData.companies);
-        // console.log('Transformed Data:', transformedData);
-        setData(transformedData.data);
-        setColumns(transformedData.columns);
-      })
-      .catch(error => console.error('Error fetching data: ', error));
-  }, []);
-
-  // console.log('Columns State:', columns);
-  // console.log('Data State:', data);
+  useEffect(() => {
+    fetchData();
+  }, [sortCriteria, filters]);
 
   const toggleTheme = () => {
     setDarkTheme(!darkTheme);

@@ -83,11 +83,42 @@ const SortMenu = ({ onSortChange }) => {
     setSorts([...sorts, { attribute: '', direction: 'Ascending' }]);
   };
 
-  const handleRemoveSort = (index) => {
-    const newSorts = sorts.filter((_, i) => i !== index);
+  const handleAddSortAttribute = (attribute) => {
+    const newSorts = [...sorts, { attribute, direction: 'Ascending' }];
     setSorts(newSorts);
-    applySort();
+    applySort(newSorts);
   };
+  
+  const handleRemoveSort = (index) => {
+    setSorts((currentSorts) => {
+      const newSorts = currentSorts.filter((_, i) => i !== index);
+      
+      const sortParams = newSorts.map(sort => ({
+        field: sort.attribute,
+        order: sort.direction === 'Ascending' ? 'ASC' : 'DESC'
+      }));
+      onSortChange(sortParams);
+  
+      return newSorts;
+    });
+  };
+  
+
+  const handleInitialAttributeSelect = (attribute) => {
+    const newSort = { attribute, direction: 'Ascending' };
+    applySortWithAttribute(newSort);
+  };
+
+  const applySortWithAttribute = (newSort) => {
+    const updatedSorts = [...sorts, newSort];
+    setSorts(updatedSorts);
+    const sortParams = updatedSorts.map(sort => ({
+      field: sort.attribute,
+      order: sort.direction === 'Ascending' ? 'ASC' : 'DESC'
+    }));
+    onSortChange(sortParams);
+  };
+  
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -111,9 +142,9 @@ const SortMenu = ({ onSortChange }) => {
                 Company attributes
               </div>
               {filteredAttributes.map((attribute, attrIndex) => (
-              <div key={attribute} className="cursor-pointer sort-menu-item" onClick={() => handleAddSort()}>
+              <div key={attribute} className="cursor-pointer sort-menu-item" onClick={() => handleInitialAttributeSelect(attribute)}>
                 {attribute}
-              </div>
+              </div>            
             ))}
             </>
           )}
