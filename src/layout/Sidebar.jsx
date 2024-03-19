@@ -39,7 +39,7 @@ const Sidebar = ({ toggleTheme }) => {
         <div className='menubar-hide sidebar-header'>
         <div className="flex items-center text-white">
           <div className="brand-icon">H</div>
-          <div className='flex items-center'>HighPerformer <MdKeyboardArrowDown className="ml-2" /></div>
+          <div className='flex items-center'>Highapps <MdKeyboardArrowDown className="ml-2" /></div>
         </div>
         </div>
         <div>
